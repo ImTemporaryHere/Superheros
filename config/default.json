@@ -1,0 +1,5 @@
+{
+  "port": 5000,
+  "mongoUri": "mongodb://localhost:27017/superhero_api",
+  "baseUrl": "http://localhost:5000"
+}
