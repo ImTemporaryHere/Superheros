@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["react/next", "react-dom/next"],
+    "types": ["react/next", "react-dom/next", "node"],
     "target": "es5",
     "lib": [
       "dom",
