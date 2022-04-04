@@ -23,6 +23,7 @@ router.get(
       //select: 'nickname profileImagePath',
       lean: true,
       leanWithId: false,
+      populate: {path: 'images', model: SuperHeroImage}
     };
 
 
