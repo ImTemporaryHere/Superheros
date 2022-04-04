@@ -8,6 +8,7 @@ import {
   Route,
 } from "react-router-dom";
 import SuperHeroPage from "./components/SuperHeroPage/SuperHeroPage";
+import AddSuperHeroModal from "./components/AddSuperHeroModal/AddSuperHeroModal";
 
 
 

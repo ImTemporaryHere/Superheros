@@ -3,6 +3,18 @@ import {Box, Grid, Button, Typography} from "@mui/material";
 import {
   Link
 } from "react-router-dom";
+import AddSuperHeroModal from "../AddSuperHeroModal/AddSuperHeroModal";
+
+
+
+
+
+
+
+
+
+
+
 
 const HeaderNav = () => {
   return (<Box sx={{
@@ -21,9 +33,8 @@ const HeaderNav = () => {
       </Grid>
 
       <Grid xs={6} justifyContent={'flex-end'} item container gap={2}>
-        <Button variant={'contained'} color={'primary'}>
-          Add SuperHero
-        </Button>
+
+        <AddSuperHeroModal></AddSuperHeroModal>
 
         <Link to={'/'}>
           <Button variant={'contained'} color={'primary'} >
