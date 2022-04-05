@@ -29,6 +29,13 @@ export const superHeroAPI = createApi({
       }),
       invalidatesTags: result => ['superHero']
 
+    }),
+
+    getSuperHeroDataById: build.query<ISuperHero,string>({
+      query: (id) => ({
+        url: `/api/superheroes/${id}`,
+        method: 'GET'
+      })
     })
   })
 
