@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import SuperHeroPage from "./components/SuperHeroPage/SuperHeroPage";
 import AddSuperHeroPage from "./components/AddSuperHeroPage/AddSuperHeroPage";
+import EditSuperHeroPage from "./components/EditSuperHeroPage/EditSuperHeroPage";
 
 
 
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/" element={<SuperHeroesList/>} />
             <Route path="/add-super-hero" element={<AddSuperHeroPage/>} />
             <Route path="/superheroes/:superHeroId" element={<SuperHeroPage />} />
+            <Route path="/edit-superhero/:superHeroId" element={<EditSuperHeroPage />} />
           </Routes>
 
         </Router>

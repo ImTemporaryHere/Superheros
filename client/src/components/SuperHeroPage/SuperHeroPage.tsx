@@ -1,8 +1,9 @@
 import React from 'react';
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {superHeroAPI} from "../../services/SuperHeroService";
 import {Box, Grid, Skeleton, Table, TableBody, TableCell, TableRow, Typography} from "@mui/material";
 import ImagesCarousel from "./ImagesCarousel/ImagesCarousel";
+import Button from "@mui/material/Button";
 
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -14,7 +15,7 @@ const SuperHeroPage = () => {
 
   return (
     <Box sx={{paddingLeft: '50px',paddingRight: '50px'}}>
-      <Grid container>
+      <Grid container justifyContent={'space-between'}>
         <Grid item container alignItems={'flex-end'} gap={2} xs={3}>
 
           <Grid justifyContent={'center'} item container xs={12}>
@@ -121,7 +122,20 @@ const SuperHeroPage = () => {
         </Grid>
 
 
-        <Grid item justifyContent={'center'} container xs={8}>
+        <Grid item justifyContent={'center'} alignItems={'center'} gap={3} container xs={8}>
+
+          <Grid gap={3} justifyContent={'center'} container item xs={12}>
+              <Link to={`/edit-superhero/${data?._id}`}>
+                <Button variant={'contained'} >
+                  Edit SuperHero Data
+                </Button>
+              </Link>
+
+            <Button variant={'contained'} color={'warning'} >
+               Delete Super hero
+            </Button>
+          </Grid>
+
           {data?.images ?
             <ImagesCarousel images={data.images} />
             :
@@ -129,6 +143,7 @@ const SuperHeroPage = () => {
 
           }
         </Grid>
+
       </Grid>
     </Box>
   );

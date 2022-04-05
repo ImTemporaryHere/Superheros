@@ -1,10 +1,13 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {superHeroAPI} from "../services/SuperHeroService";
 import AddSuperHero from '../store/reducers/addSuperHeroSlice'
+import EditSuperHero from '../store/reducers/editSuperHeroSlice'
 
 const rootReducer = combineReducers({
   [superHeroAPI.reducerPath]: superHeroAPI.reducer,
-  AddSuperHero
+  AddSuperHero,
+  EditSuperHero
+
 })
 
 export const setupStore = () => {
