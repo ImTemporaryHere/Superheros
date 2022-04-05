@@ -21,7 +21,7 @@ const SuperHeroListItem: FC<ISuperHero> = ({nickname,profileImagePath,_id}) => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {nickname}
+            {nickname.slice(0,15)}...
           </Typography>
         </CardContent>
       </Card>

@@ -153,12 +153,21 @@ const AddSuperHeroPage = () => {
           {
             responseOnCreateRequest && (
               <>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
+                <Typography id="modal-modal-title" variant="h6" gutterBottom>
                   Saved !
                 </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                   go to <Link to={`/superheroes/${responseOnCreateRequest.id}`}>Link</Link> to see saved Hero
+                <Typography id="modal-modal-description">
+                  go to
+
+                  <Link to={`/superheroes/${responseOnCreateRequest.id}`}>
+                    <Typography sx={{ml: '20px', mr: '20px'}} variant={'h4'} component={'span'}>
+                      Link
+                    </Typography>
+                  </Link>
+
+                  to see the saved Hero
                 </Typography>
+
               </>
             )}
 

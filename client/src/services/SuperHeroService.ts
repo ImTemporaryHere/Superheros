@@ -7,6 +7,7 @@ const apiUrl = process.env.REACT_APP_BASE_API_URL;
 export const superHeroAPI = createApi({
   reducerPath: 'superHeroAPI',
   baseQuery: fetchBaseQuery({baseUrl: apiUrl}),
+  tagTypes: ['superHero'],
   endpoints: (build)=> ({
     fetchAllSuperHeroes: build.query<PaginateResult<ISuperHero>,{limit: number, page: number}>({
       query: ({limit=5, page=1}) => ({
@@ -15,7 +16,9 @@ export const superHeroAPI = createApi({
           limit,
           page
         }
-      })
+      }),
+      providesTags: result => ['superHero']
+
     }),
 
     addNewSuperHero: build.mutation<{message: string, id: string},{[key: string]: any}>({
@@ -23,7 +26,8 @@ export const superHeroAPI = createApi({
         url: '/api/superheroes',
         method: 'POST',
         body: formData
-      })
+      }),
+      invalidatesTags: result => ['superHero']
 
     })
   })
