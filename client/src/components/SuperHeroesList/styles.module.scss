@@ -12,6 +12,7 @@
   margin-bottom: 40px;
   width: 100%;
   display: grid;
+  align-items: center;
   justify-content: center;
   gap: 20px;
   grid-template-columns: repeat(auto-fit, minmax(200px, 250px));

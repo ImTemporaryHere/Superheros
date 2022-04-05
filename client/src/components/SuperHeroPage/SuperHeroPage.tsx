@@ -121,7 +121,7 @@ const SuperHeroPage = () => {
         </Grid>
 
 
-        <Grid item container xs={8}>
+        <Grid item justifyContent={'center'} container xs={8}>
           {data?.images ?
             <ImagesCarousel images={data.images} />
             :

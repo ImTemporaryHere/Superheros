@@ -4,15 +4,6 @@ import {Link} from "react-router-dom";
 
 
 
-
-
-
-
-
-
-
-
-
 const HeaderNav = () => {
   return (<Box sx={{
     zIndex: 10,
@@ -28,9 +19,11 @@ const HeaderNav = () => {
 
     <Grid container justifyContent={'space-between'} alignItems={'center'}>
       <Grid xs={6} item container gap={2}>
-        <Typography variant={'h3'}>
-          SuperHeroes
-        </Typography>
+        <Link to={'/'}>
+          <Typography variant={'h3'}>
+            SuperHeroes
+          </Typography>
+        </Link>
       </Grid>
 
       <Grid xs={6} justifyContent={'flex-end'} item container gap={2}>
