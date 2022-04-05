@@ -8,7 +8,7 @@ import {
   Route,
 } from "react-router-dom";
 import SuperHeroPage from "./components/SuperHeroPage/SuperHeroPage";
-import AddSuperHeroModal from "./components/AddSuperHeroModal/AddSuperHeroModal";
+import AddSuperHeroPage from "./components/AddSuperHeroPage/AddSuperHeroPage";
 
 
 
@@ -24,6 +24,7 @@ const App = () => {
             <HeaderNav />
           <Routes>
             <Route path="/" element={<SuperHeroesList/>} />
+            <Route path="/add-super-hero" element={<AddSuperHeroPage/>} />
             <Route path="/superheroes/:superHeroId" element={<SuperHeroPage />} />
           </Routes>
 

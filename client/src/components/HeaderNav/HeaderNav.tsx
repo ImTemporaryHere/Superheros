@@ -3,7 +3,7 @@ import {Box, Grid, Button, Typography} from "@mui/material";
 import {
   Link
 } from "react-router-dom";
-import AddSuperHeroModal from "../AddSuperHeroModal/AddSuperHeroModal";
+import AddSuperHeroPage from "../AddSuperHeroPage/AddSuperHeroPage";
 
 
 
@@ -22,7 +22,9 @@ const HeaderNav = () => {
     top: '0px',
     backgroundColor: 'white',
     marginBottom: '20px',
-    padding: '10px'
+    padding: '10px',
+    borderBottom: '1px solid',
+    borderColor: 'primary.dark'
   }}>
 
     <Grid container justifyContent={'space-between'} alignItems={'center'}>
@@ -34,7 +36,13 @@ const HeaderNav = () => {
 
       <Grid xs={6} justifyContent={'flex-end'} item container gap={2}>
 
-        <AddSuperHeroModal></AddSuperHeroModal>
+
+        <Link to={'/add-super-hero'}>
+          <Button variant={'contained'} color={'primary'}>
+            Add SuperHero
+          </Button>
+        </Link>
+
 
         <Link to={'/'}>
           <Button variant={'contained'} color={'primary'} >
