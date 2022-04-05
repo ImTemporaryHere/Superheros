@@ -1,7 +1,10 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 
-
+interface localImageUrlFromFile {
+  name: string,
+  url: string
+}
 
 interface IInitialState {
   nickname: string,
@@ -9,8 +12,8 @@ interface IInitialState {
   origin_description: string,
   superpowers: string,
   catch_phrase: string,
-  profileImageLocalUrl: null | string,
-  images: string[],
+  profileImageLocalUrl: null | localImageUrlFromFile,
+  images: localImageUrlFromFile[],
 }
 
 const initialState: IInitialState = {
@@ -42,10 +45,10 @@ export const AddSuperHeroSlice = createSlice({
     catchPhraseHandleChange: (state, action: PayloadAction<string>) => {
       state.catch_phrase = action.payload
     },
-    profileImageLocalUrlHandleChange: (state, action: PayloadAction<string>) => {
+    profileImageLocalUrlHandleChange: (state, action: PayloadAction<localImageUrlFromFile>) => {
       state.profileImageLocalUrl = action.payload
     },
-    additionalImagesHandleChange: (state, action: PayloadAction<string[]>) => {
+    additionalImagesHandleChange: (state, action: PayloadAction<localImageUrlFromFile[]>) => {
       state.images = action.payload
     },
 

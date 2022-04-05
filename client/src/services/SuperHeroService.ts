@@ -16,6 +16,15 @@ export const superHeroAPI = createApi({
           page
         }
       })
+    }),
+
+    addNewSuperHero: build.mutation<{message: string, id: string},{[key: string]: any}>({
+      query: (formData)=> ({
+        url: '/api/superheroes',
+        method: 'POST',
+        body: formData
+      })
+
     })
   })
 

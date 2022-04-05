@@ -2,12 +2,40 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import React, {useState} from "react";
-import {Grid, Skeleton, styled, TextField} from "@mui/material";
+import {Grid, Modal, Skeleton, styled, TextField} from "@mui/material";
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import {AddSuperHeroSlice} from "../../store/reducers/addSuperHeroSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
+import {superHeroAPI} from "../../services/SuperHeroService";
+import {Link} from "react-router-dom";
+
+
+async function getFileFromUrl(url: string, name: string, defaultType = 'image/jpeg'){
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], name, {
+    type: data.type || defaultType,
+  });
+}
+
+
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
+
 
 
 const Input = styled('input')({
@@ -35,13 +63,19 @@ const AddSuperHeroPage = () => {
     additionalImagesHandleChange
   } = AddSuperHeroSlice.actions
 
+  const [createSuperHero,{isLoading,error: createError, data: responseOnCreateRequest}] = superHeroAPI.useAddNewSuperHeroMutation()
+
+
+  const [openModalResults, setOpenModalResults] = React.useState(false);
+  const handleClose = () => setOpenModalResults(false);
+
 
   const handleProfileImageChange = (event: React.ChangeEvent) => {
     event.preventDefault();
     const { files } = event.target as HTMLInputElement;
     if (files) {
       const localImageUrl = window.URL.createObjectURL(files[0]);
-      dispatch(profileImageLocalUrlHandleChange(localImageUrl))
+      dispatch(profileImageLocalUrlHandleChange({name: files[0].name, url: localImageUrl}))
     }
   }
 
@@ -53,7 +87,7 @@ const AddSuperHeroPage = () => {
 
       for(let file of Array.from(files)) {
         const localImageUrl = window.URL.createObjectURL(file);
-        imagesUrls.push(localImageUrl)
+        imagesUrls.push({name: file.name, url: localImageUrl})
       }
 
       dispatch(additionalImagesHandleChange(imagesUrls))
@@ -61,12 +95,79 @@ const AddSuperHeroPage = () => {
   }
 
 
-  const handleSaveToDB = () => {
+  const handleSaveToDB = async () => {
 
+    try {
+      if(!profileImageLocalUrl) {
+        return
+      }
+
+      const formData = new FormData();
+      formData.append('nickname',nickname)
+      formData.append('real_name',real_name)
+      formData.append('origin_description',origin_description)
+      formData.append('superpowers',superpowers)
+      formData.append('catch_phrase',catch_phrase)
+
+      const profileImageFile = await getFileFromUrl(profileImageLocalUrl.url,profileImageLocalUrl.name)
+      formData.append('profileImage',profileImageFile)
+
+
+      for (let img of images) {
+        const imgFile = await getFileFromUrl(img.url,img.name)
+        formData.append('images',imgFile)
+      }
+
+
+
+      await createSuperHero(formData)
+
+      setOpenModalResults(true)
+    }
+    catch (e) {
+      setOpenModalResults(true)
+    }
   }
 
   return (
     <div>
+      <Modal
+        open={openModalResults}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+
+          {createError && (
+           <>
+             <Typography id="modal-modal-title" variant="h6" component="h2">
+               Error
+             </Typography>
+             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+               {createError}
+             </Typography>
+           </>
+          )}
+
+          {
+            responseOnCreateRequest && (
+              <>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Saved !
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                   go to <Link to={`/superheroes/${responseOnCreateRequest.id}`}>Link</Link> to see saved Hero
+                </Typography>
+              </>
+            )}
+
+
+        </Box>
+      </Modal>
+
+
+
       <Box>
         <Grid container justifyContent={'center'} gap={1}>
           <Grid justifyContent={'center'} xs={5} item container>
@@ -140,7 +241,7 @@ const AddSuperHeroPage = () => {
               {
                 profileImageLocalUrl ?
 
-                  <img src={profileImageLocalUrl} height={118} alt=""/>
+                  <img src={profileImageLocalUrl.url} height={118} alt=""/>
 
                   :
 
@@ -168,9 +269,9 @@ const AddSuperHeroPage = () => {
 
               <ImageList sx={{ width: 500, height: 300 }} cols={3} rowHeight={164}>
                 {images.map((item) => (
-                  <ImageListItem key={item}>
+                  <ImageListItem key={item.url}>
                     <img
-                      src={item}
+                      src={item.url}
                       loading="lazy"
                     />
                   </ImageListItem>
@@ -194,7 +295,7 @@ const AddSuperHeroPage = () => {
 
 
           <Grid item container xs={12} gap={3} justifyContent={'center'}>
-            <Button onCLick={handleSaveToDB} variant="contained" component="span" >
+            <Button onClick={handleSaveToDB} variant="contained" component="span" >
               save superHero to Database
             </Button>
           </Grid>

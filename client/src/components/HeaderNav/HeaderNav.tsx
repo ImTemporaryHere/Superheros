@@ -1,9 +1,6 @@
 import React from 'react';
 import {Box, Grid, Button, Typography} from "@mui/material";
-import {
-  Link
-} from "react-router-dom";
-import AddSuperHeroPage from "../AddSuperHeroPage/AddSuperHeroPage";
+import {Link} from "react-router-dom";
 
 
 
@@ -18,8 +15,10 @@ import AddSuperHeroPage from "../AddSuperHeroPage/AddSuperHeroPage";
 
 const HeaderNav = () => {
   return (<Box sx={{
+    zIndex: 10,
     position: 'sticky',
     top: '0px',
+    opacity: 1,
     backgroundColor: 'white',
     marginBottom: '20px',
     padding: '10px',

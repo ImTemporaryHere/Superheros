@@ -10,7 +10,7 @@ function SuperHeroesList() {
 
 
 
-  const {data: {docs,totalPages}={}, error} = superHeroAPI.useFetchAllSuperHeroesQuery({page, limit: itemsPerPage})
+  const {data: {docs,totalPages,totalDocs}={}, error} = superHeroAPI.useFetchAllSuperHeroesQuery({page, limit: itemsPerPage})
 
 
   const handleChangePage = (
@@ -24,7 +24,7 @@ function SuperHeroesList() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setItemsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(1);
   };
 
 
@@ -46,12 +46,12 @@ function SuperHeroesList() {
 
         <div className={styles['super-heroes-list__pagination']}>
           {
-            totalPages &&
+            totalDocs &&
             <TablePagination
               labelRowsPerPage={'heroes per page'}
               rowsPerPageOptions={[5,10,25]}
               component="div"
-              count={totalPages}
+              count={totalDocs}
               page={page-1}
               onPageChange={handleChangePage}
               rowsPerPage={itemsPerPage}
