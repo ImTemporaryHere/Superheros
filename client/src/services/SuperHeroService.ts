@@ -1,6 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
 import {ISuperHero} from "../models/ISuperHero";
 import {PaginateResult} from "../models/PaginateResult";
+import {ISuperHeroImage} from "../models/ISuperHeroImage";
 
 const apiUrl = process.env.REACT_APP_BASE_API_URL;
 
@@ -41,15 +42,19 @@ export const superHeroAPI = createApi({
       query: (id) => ({
         url: `/api/superheroes/${id}`,
         method: 'GET'
-      })
+      }),
+      providesTags: result => ['superHero']
     }),
 
     updateSuperHeroData: build.mutation<{message: string},{newSuperHero: {[key in Keys]: Values},id: string}>({
-      query: ({newSuperHero, id})=> ({
-        url: `/api/superheroes/${id}`,
-        method: 'PUT',
-        body: JSON.stringify(newSuperHero)
-      }),
+      query: ({newSuperHero, id})=> {
+
+        return ({
+          url: `/api/superheroes/${id}`,
+          method: 'PUT',
+          body: newSuperHero
+        })
+      },
       invalidatesTags: result => ['superHero']
 
     }),
@@ -67,14 +72,31 @@ export const superHeroAPI = createApi({
 
 
 
-    deleteImageFromSuperHero: build.mutation<{message: string},{superHeroID: string, imageId: string}>({
-      query: ({superHeroID,imageId})=> ({
-        url: `/api/superheroes/${superHeroID}/images/${imageId}`,
-        method: 'DELETE'
+    deleteImageFromSuperHero: build.mutation<{message: string},{arrayOfImagesToBeRemoved: ISuperHeroImage[]}>({
+      query: ({arrayOfImagesToBeRemoved})=> ({
+        url: `/api/superheroes-images`,
+        method: 'DELETE',
+        body: arrayOfImagesToBeRemoved
       }),
       invalidatesTags: result => ['superHero']
 
     }),
+
+
+    deleteSuperHero: build.mutation<{message: string},{id: string}>({
+      query: ({id})=> ({
+        url: `/api/superheroes/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: result => ['superHero']
+
+    }),
+
+
+
+
+
+
 
   })
 

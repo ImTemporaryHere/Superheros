@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, useParams} from "react-router-dom";
 import {superHeroAPI} from "../../services/SuperHeroService";
-import {Box, Grid, Skeleton, Table, TableBody, TableCell, TableRow, Typography} from "@mui/material";
+import {Box, Grid, Modal, Skeleton, Table, TableBody, TableCell, TableRow, Typography} from "@mui/material";
 import ImagesCarousel from "./ImagesCarousel/ImagesCarousel";
 import Button from "@mui/material/Button";
 
@@ -12,9 +12,62 @@ const SuperHeroPage = () => {
   const { superHeroId } = useParams();
   const {data,isLoading,error} = superHeroAPI.useGetSuperHeroDataByIdQuery(superHeroId as string)
 
+  const [deleteSuperHero, {data: responseOnDeleteRequest}] = superHeroAPI.useDeleteSuperHeroMutation()
+
 
   return (
     <Box sx={{paddingLeft: '50px',paddingRight: '50px'}}>
+
+      <Modal
+        open={openModalResults}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+
+          {updateSuperHeroError && (
+            <>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Error
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                {updateSuperHeroError}
+              </Typography>
+            </>
+          )}
+
+          {
+            responseOnUpdateSuperHero && (
+              <>
+                <Typography id="modal-modal-title" variant="h6" gutterBottom>
+                  Saved !
+                </Typography>
+                <Typography id="modal-modal-description">
+                  go to
+
+                  <Link to={'/' + `superheroes/${superHeroId}`}>
+                    <Typography sx={{ml: '20px', mr: '20px'}} variant={'h4'} component={'span'}>
+                      Link
+                    </Typography>
+                  </Link>
+
+                  to see the saved Hero
+                </Typography>
+
+              </>
+            )}
+
+
+        </Box>
+      </Modal>
+
+
+
+
+
+
+
       <Grid container justifyContent={'space-between'}>
         <Grid item container alignItems={'flex-end'} gap={2} xs={3}>
 

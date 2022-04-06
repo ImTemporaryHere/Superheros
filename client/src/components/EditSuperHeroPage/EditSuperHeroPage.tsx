@@ -12,6 +12,7 @@ import {superHeroAPI} from "../../services/SuperHeroService";
 import {Link, useParams} from "react-router-dom";
 import {EditSuperHeroSlice, ILocalImageUrlFromFile} from "../../store/reducers/editSuperHeroSlice";
 import {ISuperHeroImage} from "../../models/ISuperHeroImage";
+import {ISuperHero} from "../../models/ISuperHero";
 
 
 async function getFileFromUrl(url: string, name: string, defaultType = 'image/jpeg'){
@@ -75,21 +76,25 @@ const EditSuperHeroPage = () => {
     additionalImagesHandleChange
   } = EditSuperHeroSlice.actions;
 
-  const [createSuperHero,{isLoading,error: updateSuperHeroError, data: responseOnCreateRequest}] = superHeroAPI.useUpdateSuperHeroDataMutation()
+  const [updateSuperHero,{isLoading,error: updateSuperHeroError, data: responseOnUpdateSuperHero}] = superHeroAPI.useUpdateSuperHeroDataMutation()
+
+  const [addNewImagesToSuperHero, {isLoading: isLoadingAddNewImages, data: responseOnAddingNewImages}] = superHeroAPI.useAddNewImagesToSuperHeroMutation()
+
+  const [deleteImageFromSuperHero, {data: responseOnDeletingImage}] = superHeroAPI.useDeleteImageFromSuperHeroMutation()
 
 
   const [openModalResults, setOpenModalResults] = React.useState(false);
   const handleClose = () => setOpenModalResults(false);
 
 
-  const handleProfileImageChange = (event: React.ChangeEvent) => {
-    event.preventDefault();
-    const { files } = event.target as HTMLInputElement;
-    if (files) {
-      const localImageUrl = window.URL.createObjectURL(files[0]);
-      //dispatch(profileImageLocalUrlHandleChange({name: files[0].name, url: localImageUrl}))
-    }
-  }
+  // const handleProfileImageChange = (event: React.ChangeEvent) => {
+  //   event.preventDefault();
+  //   const { files } = event.target as HTMLInputElement;
+  //   if (files) {
+  //     const localImageUrl = window.URL.createObjectURL(files[0]);
+  //     //dispatch(profileImageLocalUrlHandleChange({name: files[0].name, url: localImageUrl}))
+  //   }
+  // }
 
   const handleAdditionalImagesChangeInputValue = (event: React.ChangeEvent) => {
     event.preventDefault();
@@ -142,33 +147,52 @@ const EditSuperHeroPage = () => {
   const handleSaveToDB = async () => {
 
     try {
-      // if(!profileImageLocalUrl) {
-      //   return
-      // }
 
-      const formData = new FormData();
-      formData.append('nickname',nickname)
-      formData.append('real_name',real_name)
-      formData.append('origin_description',origin_description)
-      formData.append('superpowers',superpowers)
-      formData.append('catch_phrase',catch_phrase)
+      const updateFields = {
+        nickname: nickname,
+        real_name: real_name,
+        origin_description,
+        superpowers,
+        catch_phrase
+      }
 
-      // const profileImageFile = await getFileFromUrl(profileImageLocalUrl.url,profileImageLocalUrl.name)
-      // formData.append('profileImage',profileImageFile)
+      const newImagesFormData = new FormData()
+
+      for (let img of images) {
+        if('url' in img) {
+          const imgFile = await getFileFromUrl(img.url,img.name)
+          newImagesFormData.append('images',imgFile)
+        }
+      }
+
+      const imagesToBeRemoved = originalSuperHeroData?.images.filter((originalImage)=>{
+        if(images.findIndex((img)=>(img as ISuperHeroImage).path===originalImage.path) === -1){
+
+          return true
+        }
+        else  {
+
+          return false
+        }
+      })
 
 
-      // for (let img of images) {
-      //   const imgFile = await getFileFromUrl(img.url,img.name)
-      //   formData.append('images',imgFile)
-      // }
+      if(imagesToBeRemoved) {
+        console.log(imagesToBeRemoved)
+        await deleteImageFromSuperHero({arrayOfImagesToBeRemoved: imagesToBeRemoved})
+      }
 
+      await Promise.all([
+        await updateSuperHero({newSuperHero: (updateFields as ISuperHero), id: (superHeroId as string)}),
+        await addNewImagesToSuperHero({id: (superHeroId as string), formData: newImagesFormData}),
 
+      ])
 
-      //await createSuperHero(formData)
 
       setOpenModalResults(true)
     }
     catch (e) {
+      console.log(updateSuperHeroError)
       setOpenModalResults(true)
     }
   }
@@ -217,7 +241,7 @@ const EditSuperHeroPage = () => {
           )}
 
           {
-            responseOnCreateRequest && (
+            responseOnUpdateSuperHero && (
               <>
                 <Typography id="modal-modal-title" variant="h6" gutterBottom>
                   Saved !
@@ -225,7 +249,7 @@ const EditSuperHeroPage = () => {
                 <Typography id="modal-modal-description">
                   go to
 
-                  <Link to={`/`}>
+                  <Link to={'/' + `superheroes/${superHeroId}`}>
                     <Typography sx={{ml: '20px', mr: '20px'}} variant={'h4'} component={'span'}>
                       Link
                     </Typography>
@@ -333,7 +357,7 @@ const EditSuperHeroPage = () => {
 
               <label htmlFor="icon-button-file">
                 <Input
-                  onChange={handleProfileImageChange}
+                  //onChange={handleProfileImageChange}
                   accept="image/*" id="icon-button-file" type="file"
                 />
                 <Button variant="contained" component="span" endIcon={<PhotoCamera />}>
@@ -411,7 +435,7 @@ const EditSuperHeroPage = () => {
 
           <Grid item container xs={12} gap={3} justifyContent={'center'}>
             <Button onClick={handleSaveToDB} variant="contained" component="span" >
-              save superHero to Database
+               Update all data in db
             </Button>
           </Grid>
 
