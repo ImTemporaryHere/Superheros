@@ -11,7 +11,7 @@ const schema = new Schema({
   profileImagePath: String,
   images: [Types.ObjectId]
 
-})
+}, {timestamps: true})
 
 schema.plugin(mongoosePaginate);
 

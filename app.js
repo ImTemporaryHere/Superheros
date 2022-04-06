@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 
 import superheroesRouter from './routes/superheroes';
+import imagesRouter from './routes/superHeroesImage';
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(express.json({ extended: true }))
 app.use(express.static('public'));
 
 app.use('/api/superheroes', superheroesRouter)
+app.use('/api/superheroes-images', imagesRouter)
 
 
 if (process.env.NODE_ENV === 'production') {

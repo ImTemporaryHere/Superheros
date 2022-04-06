@@ -87,6 +87,17 @@ with fields :
         images: list of image files for gallery, max number 10,
 
 
+
+
+##put /api/superheroes/:superHeroId
+
+endpoint for updating superHero, expects JSON Body with text fields
+to be changed
+
+
+
+
+
 ##delete /api/superheroes/:superHeroId
 
 endpoint for removing superHero and all its images
@@ -104,10 +115,15 @@ expects you to provide multipart/form data with fields:
 
         images: list of image files for gallery, max number 10,
 
-##delete /api/superheroes/:superHeroId/images/:imageId
+##delete /api/superheroes-images
 
 endpoint for removing images from the existing superHero
 
-:superHeroId - id of the superHero images will be removed from.
+expects json body - array of images objects
 
-:imageId - id of the image to removed.
+            [
+                {
+                    path: String,
+                  superHeroId: Types.ObjectId
+                }
+            ]

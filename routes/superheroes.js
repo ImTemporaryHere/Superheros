@@ -6,7 +6,11 @@ import fs from 'fs/promises'
 import path from 'path'
 const router = Router();
 import multer from 'multer';
-const upload = multer();
+const upload = multer({
+  limits: {
+    fieldSize: 1048576*20 // 20 mb
+  }
+});
 
 
 
@@ -23,6 +27,7 @@ router.get(
       //select: 'nickname profileImagePath',
       lean: true,
       leanWithId: false,
+      sort: {createdAt: -1},
       populate: {path: 'images', model: SuperHeroImage}
     };
 
@@ -59,7 +64,7 @@ router.post(
     '/',
   upload.fields([
     { name: 'profileImage', maxCount: 1 },
-    { name: 'images', maxCount: 10 }
+    { name: 'images', maxCount: 50 }
   ]),
     async (req, res) => {
       try {
@@ -94,27 +99,31 @@ router.post(
         newSuperHero.images = [newProfileImage._id];
 
 
-        const images = []
+        if(req.files['images']) {
+          const images = []
 
-        for (let superHeroImage of req.files['images']) {
-          const newGalleryImage = new SuperHeroImage();
+          for (let superHeroImage of req.files['images']) {
+            const newGalleryImage = new SuperHeroImage();
 
-          const newGalleryImagePath = path.join(pathToSaveImages,newGalleryImage._id.toString() + '.' + superHeroImage.originalname.split('.').pop())
+            const newGalleryImagePath = path.join(pathToSaveImages,newGalleryImage._id.toString() + '.' + superHeroImage.originalname.split('.').pop())
 
 
-          await fs.writeFile(newGalleryImagePath, superHeroImage.buffer);
+            await fs.writeFile(newGalleryImagePath, superHeroImage.buffer);
 
-          newGalleryImage.path = newGalleryImagePath.split(path.sep).slice(1,).join('/');
+            newGalleryImage.path = newGalleryImagePath.split(path.sep).slice(1,).join('/');
 
-          newGalleryImage.superHeroId = newSuperHero._id;
+            newGalleryImage.superHeroId = newSuperHero._id;
 
-          await newGalleryImage.save()
+            await newGalleryImage.save()
 
-          images.push(newGalleryImage._id)
+            images.push(newGalleryImage._id)
 
+          }
+
+          newSuperHero.images.push(...images)
         }
 
-        newSuperHero.images.push(...images)
+
 
 
         await newSuperHero.save()
@@ -159,7 +168,8 @@ router.put(
 
       const newFieldsOfSuperHero = req.body;
 
-      console.log(newFieldsOfSuperHero)
+
+      console.log(newFieldsOfSuperHero, superHeroId)
 
       await SuperHero.findOneAndUpdate({_id: superHeroId}, newFieldsOfSuperHero)
 
@@ -185,7 +195,7 @@ router.post(
 
         const superHero = await SuperHero.findOne({_id: superHeroId});
 
-        if(!superHero) {
+        if(!superHero || req.files['images'].length < 1) {
           res.status(500).json({ message: 'no superHero exist with provided id' });
           return;
         }
@@ -226,43 +236,6 @@ router.post(
         res.status(500).json({ message: e.message })
       }
     })
-
-
-
-router.delete(
-  '/:superHeroId/images/:imageId',
-
-  async (req, res) => {
-    try {
-
-      const superHeroId = req.params.superHeroId;
-      const imageIdToRemove = req.params.imageId;
-
-      const superHero = await SuperHero.findOne({_id: superHeroId});
-
-      if(!superHero) {
-        res.status(500).json({ message: 'no superHero exist with provided id' });
-        return;
-      }
-
-      const imageToBeRemoved = await SuperHeroImage.findOne({_id: imageIdToRemove})
-
-      await fse.remove(path.join('public',imageToBeRemoved.path))
-
-      await SuperHeroImage.findOneAndDelete({_id: imageIdToRemove})
-
-      superHero.images = [...superHero.images.filter(imageId => imageId.toString() !== imageIdToRemove)]
-
-      await superHero.save()
-
-
-      res.status(201).json({message: 'removed'})
-
-    } catch (e) {
-      console.log(e)
-      res.status(500).json({ message: e.message })
-    }
-  })
 
 
 
