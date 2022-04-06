@@ -1,18 +1,60 @@
 import React from 'react';
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import {superHeroAPI} from "../../services/SuperHeroService";
 import {Box, Grid, Modal, Skeleton, Table, TableBody, TableCell, TableRow, Typography} from "@mui/material";
 import ImagesCarousel from "./ImagesCarousel/ImagesCarousel";
 import Button from "@mui/material/Button";
 
 
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
+
+
+
+
+
+
+
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const SuperHeroPage = () => {
+  let navigate = useNavigate();
+
   const { superHeroId } = useParams();
   const {data,isLoading,error} = superHeroAPI.useGetSuperHeroDataByIdQuery(superHeroId as string)
 
+
+  const [openModalResults, setOpenModalResults] = React.useState(false);
+  const handleClose = () => setOpenModalResults(false);
+
+
+
+
   const [deleteSuperHero, {data: responseOnDeleteRequest}] = superHeroAPI.useDeleteSuperHeroMutation()
+
+
+  const handleRemoveHero = async (id: string) => {
+    try {
+      await deleteSuperHero({id: id})
+
+      navigate('/')
+    }
+    catch (e) {
+      console.log(e)
+    }
+  }
 
 
   return (
@@ -26,35 +68,12 @@ const SuperHeroPage = () => {
       >
         <Box sx={style}>
 
-          {updateSuperHeroError && (
-            <>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Error
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {updateSuperHeroError}
-              </Typography>
-            </>
-          )}
-
           {
-            responseOnUpdateSuperHero && (
+            responseOnDeleteRequest && (
               <>
                 <Typography id="modal-modal-title" variant="h6" gutterBottom>
-                  Saved !
+                  Removed !
                 </Typography>
-                <Typography id="modal-modal-description">
-                  go to
-
-                  <Link to={'/' + `superheroes/${superHeroId}`}>
-                    <Typography sx={{ml: '20px', mr: '20px'}} variant={'h4'} component={'span'}>
-                      Link
-                    </Typography>
-                  </Link>
-
-                  to see the saved Hero
-                </Typography>
-
               </>
             )}
 
@@ -184,7 +203,12 @@ const SuperHeroPage = () => {
                 </Button>
               </Link>
 
-            <Button variant={'contained'} color={'warning'} >
+            <Button onClick={()=>{
+              handleRemoveHero((superHeroId as string))
+            }}
+                    variant={'contained'}
+                    color={'warning'}
+            >
                Delete Super hero
             </Button>
           </Grid>
